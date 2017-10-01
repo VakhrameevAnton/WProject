@@ -46,6 +46,7 @@ namespace Auction.WebApi.Controllers
             Service.CreateBet(bet);
         }
 
+        [HttpPost]
         [Route("lots/{lotid}/finish")]
         public IEnumerable<object> FinishLot(int lotId)
         {
