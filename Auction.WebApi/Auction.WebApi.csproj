@@ -195,6 +195,7 @@
     <Compile Include="Models\BetContract.cs" />
     <Compile Include="Models\LotContract.cs" />
     <Compile Include="Models\UserContract.cs" />
+    <Compile Include="Models\WinBetInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageServices\AuctionService.cs" />
   </ItemGroup>

@@ -24,7 +24,7 @@ namespace Auction.WebApi.StorageServices
         {
             using (var db = new DataRetriever(_connectionString))
             {
-                return db.ReadData<UserContract>("select id, name, wallet from users").ToList();
+                return db.ReadData<UserContract>("select * from users").ToList();
             }
         }
 
@@ -32,7 +32,7 @@ namespace Auction.WebApi.StorageServices
         {
             using (var db = new DataRetriever(_connectionString))
             {
-                return db.ReadData<LotContract>("select id, price, title, idauthor, timeofpost, deadline, picture from lots");
+                return db.ReadData<LotContract>("select * from lots");
             }
         }
 
@@ -50,6 +50,32 @@ Lot
 @Amount,
 @Win,
 @Lot)", bet);
+            }
+        }
+
+        internal void FinishLot(int lotId)
+        {
+            using (var db = new DataRetriever(_connectionString))
+            {
+                db.Execute(@"update lots set finished = true where id = @lotId", new { lotId });
+            }
+        }
+
+        internal int? GetWinBet(int lotId)
+        {
+            var sql = $@"select amount, max(id) as id, count(*) 
+from bets 
+where lot = {lotId}
+group by amount
+having count(*) = 1
+order by 1 asc
+limit 1";
+
+            using (var db = new DataRetriever(_connectionString))
+            {
+                var res = db.ReadData<WinBetInfo>(sql).ToList();
+
+                return res.FirstOrDefault()?.Id;
             }
         }
 
@@ -71,11 +97,20 @@ Picture) values((select max(id) + 1 from lots), @Price,
             }
         }
 
+        internal void SetWinnerBet(BetContract winBet)
+        {
+            using (var db = new DataRetriever(_connectionString))
+            {
+                db.Execute($"update lots set winneruserid = @BetOwner where id = @Lot", winBet);
+                db.Execute($"update bets set win = true where id = @Id", winBet);
+            }
+        }
+
         internal IEnumerable<BetContract> GetBets(int lotId)
         {
             using (var db = new DataRetriever(_connectionString))
             {
-                return db.ReadData<BetContract>($"select id, betowner, amount, win, lot from bets where lot = {lotId}");
+                return db.ReadData<BetContract>($"select * from bets where lot = {lotId}");
             }
         }
 
