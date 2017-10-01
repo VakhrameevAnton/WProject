@@ -44,12 +44,14 @@ namespace Auction.WebApi.StorageServices
 BetOwner,
 Amount,
 Win,
-Lot
+Lot,
+transactionid
 ) values ((select max(id) + 1 from bets), 
 @BetOwner,
 @Amount,
 @Win,
-@Lot)", bet);
+@Lot,
+@transactionid)", bet);
             }
         }
 
@@ -103,6 +105,14 @@ Picture) values((select max(id) + 1 from lots), @Price,
             {
                 db.Execute($"update lots set winneruserid = @BetOwner where id = @Lot", winBet);
                 db.Execute($"update bets set win = true where id = @Id", winBet);
+            }
+        }
+
+        internal void SetBetTransactionId(int betId, string transactionid)
+        {
+            using (var db = new DataRetriever(_connectionString))
+            {
+                db.Execute($"update bets set transactionId = @transactionid where id = @betId", new { betId, transactionid });
             }
         }
 

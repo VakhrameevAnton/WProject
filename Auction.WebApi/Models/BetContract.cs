@@ -12,5 +12,6 @@ namespace Auction.WebApi.Models
         public int Amount { get; set; }
         public bool Win { get; set; }
         public int Lot { get; set; }
+        public string TransactionId { get; set; }
     }
 }

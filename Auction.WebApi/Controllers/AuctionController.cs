@@ -47,7 +47,7 @@ namespace Auction.WebApi.Controllers
         }
 
         [Route("lots/{lotid}/finish")]
-        public BetContract FinishLot(int lotId)
+        public IEnumerable<object> FinishLot(int lotId)
         {
             Service.FinishLot(lotId);
 
@@ -58,11 +58,9 @@ namespace Auction.WebApi.Controllers
                 var bet = Service.GetBets(lotId).FirstOrDefault(p => p.Id == winBetId.Value);
 
                 Service.SetWinnerBet(bet);
-
-                return bet;
             }
 
-            return null;
+            return GetLotUsers(lotId);
         }
 
         [Route("bets/{betId}")]
@@ -84,11 +82,20 @@ namespace Auction.WebApi.Controllers
                         bet.Id,
                         bet.Amount, 
                         bet.Win, 
+                        bet.TransactionId,
                         user
                     }
                     )
                     .OrderByDescending(p => p.Win)
                     .ThenByDescending(p => p.Id);
         }
+
+        [HttpPost]
+        [Route("bets/{betId}/settransactionid/{transactionid}")]
+        public void SetBetTransactionId(int betId, string transactionid)
+        {
+            Service.SetBetTransactionId(betId, transactionid);
+        }
+
     }
 }
