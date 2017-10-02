@@ -1,4 +1,5 @@
 <html lang="en" class="gr__getbootstrap_com">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -6,139 +7,310 @@
     <meta name="author" content="">
     <!--<link rel="icon" href="favicon.ico">-->
 
-    <title>Album example for Bootstrap</title>
+    <title>BlockChain аукцион</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="album.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="index.css" />
 </head>
 
-<body data-gr-c-s-loaded="true" ng-app="app">
+<body data-gr-c-s-loaded="true" ng-app="app" ng-controller="appController">
 
-<div class="bg-dark collapse" id="navbarHeader" style="">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-8 py-4">a
-                <h4 class="text-white">About</h4>
-                <p class="text-muted">Add some information about the album below, the author, or any other background
-                    context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them
-                    off to some social networking sites or contact information.</p>
-            </div>
-            <div class="col-sm-4 py-4">
-                <h4 class="text-white">Contact</h4>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">Follow on Twitter</a></li>
-                    <li><a href="#" class="text-white">Like on Facebook</a></li>
-                    <li><a href="#" class="text-white">Email me</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="navbar navbar-dark bg-dark">
-    <div class="container d-flex justify-content-between">
-        <a href="#" class="navbar-brand">Скандинавский аукцион</a>
-        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarHeader"
-                aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
+    <input type="checkbox" id="layer-drawer-controller-toggle" hidden="hidden" />
 
-<!--<section class=" text-center">-->
-<!--<div class="container">-->
-<!--<h1 class="jumbotron-heading">Скандинавский аукцион</h1>-->
-<!--<p class="lead text-muted">Суть аукциона в краце</p>-->
-<!--<p>-->
-<!--<a href="#" class="btn btn-primary">Main call to action</a>-->
-<!--<a href="#" class="btn btn-secondary">Secondary action</a>-->
-<!--</p>-->
-<!--</div>-->
-<!--</section>-->
-
-<div class="album text-muted">
-    <div class="container" ng-controller="appController">
-        <div class="list-group">
-            <button ng-repeat="user in users" type="button" class="list-group-item list-group-item-action "
-                    ng-class="{'active': activeUser.id==user.id}" ng-click="setActiveUser(user)">
-                {{getUserBalanceAndName(user)}}
-            </button>
-        </div>
-        <br>
-        <div class="progress" ng-show="loading">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="99" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
-        </div>
-        <br>
-        <div class="alert alert-success" role="alert" ng-show="betAdded">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            Ставка сделана! Сделайте еще одну ставку!
-        </div>
-        <div class="row">
-            <div class="card" ng-repeat="item in items">
-                <img alt="100%x280" style="height: 280px; width: 156px; display: block;align: center;"
-                     ng-src="{{item.img}}" data-holder-rendered="true">
-                <p class="card-text">{{item.title}}</p>
-
-                <div class="input-group">
-                    <!-- <span class="input-group-addon" id="basic-addon1">Введите сумму</span> -->
-                    <input type="number" step="10" min="10" class="form-control" placeholder="10" aria-label="Username"
-                           aria-describedby="basic-addon1" ng-model="amount">
-                    <button href="#" ng-click="makeaBet(amount, item.id)" class="btn btn-primary" ng-disabled="!(activeUser.balance>0)">Сделать ставку</button>
+    <div class="overlay">
+        <div class="navbar navbar-dark bg-dark">
+            <div class="container d-flex justify-content-between">
+                <a href="#" class="navbar-brand">BlockChain аукцион</a>
+                <div>
+                    <span class="text-white">Баланс: <strong ng-bind="activeUser.balance"></strong> waves</span>
+                    <button for="layer-drawer-controller-toggle" class="btn btn-primary ml-3" ng-click="showDrawer('new-lot')">Создать лот</button>
                 </div>
             </div>
         </div>
 
-    </div>
-</div>
+        <div class="album text-muted">
+            <div class="container">
+                <div class="list-group">
+                    <button ng-repeat="user in users" type="button" class="list-group-item list-group-item-action" ng-class="{'active': activeUser.id==user.id}"
+                        ng-click="setActiveUser(user)" ng-bind="user.name"></button>
+                </div>
 
-<footer class="text-muted">
-    <div class="container">
-        <p class="float-right">
-            <a href="#">Наверх</a>
-        </p>
-        <!--   <p>Album example is © Bootstrap, but please download and customize it for yourself!</p>
-          <p>New to Bootstrap? <a href="../../">Visit the homepage</a> or read our <a href="../../getting-started/">getting started guide</a>.</p> -->
-    </div>
-</footer>
+                <ul class="nav nav-tabs justify-content-center my-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#lot" ng-click="menuLots()">Лоты</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#bets" ng-click="menuBets()">История ставок</a>
+                    </li>
 
-<!-- Bootstrap core JavaScript
+                    <li class="nav-item">
+                        <a class="nav-link" href="#myBet" ng-click="menuMyBets()">Мои ставки</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#myLot" ng-click="menuMyLots()">Мои лоты</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#win" ng-click="menuWin()">Мои покупки</a>
+                    </li>
+                </ul>
+
+                <div class="nav-tabs-page" id="lot">
+                    <div class="progress" ng-show="loading">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="99" aria-valuemin="0"
+                            aria-valuemax="100" style="width: 100%"></div>
+                    </div>
+                    <div class="alert alert-success" role="alert" ng-show="betAdded">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button> Ставка сделана! Вы можете сделать еще одну ставку
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="card mx-3 border" ng-repeat="item in items" ng-class="{'border-info': item.finished, 'border-primary': item.author == activeUser.id}"
+                            style="width:340px">
+                            <img alt="100%x280" style="height: 280px; display: block; margin: 0 auto" ng-src="{{item.img}}" data-holder-rendered="true"
+                                class="border p-2 rounded mb-2">
+                            <p class="h4 mb-2">{{item.title}}</p>
+                            <div class="card-text">
+                                <strong ng-bind="userFromId(item.author).name" class="mb-2"></strong>
+                                <span class="card-text float-right mb-3"><strong ng-bind="item.price"></strong> waves</span>
+                            </div>
+
+                            <div class="input-group mb-2" ng-hide="item.finished">
+                                <!-- <span class="input-group-addon" id="basic-addon1">Введите сумму</span> -->
+                                <input type="number" step="1" min="1" class="form-control" placeholder="1" aria-label="Username" aria-describedby="basic-addon1"
+                                    ng-model="amount">
+                            </div>
+                            <div class="input-group justify-content-center mb-2">
+                                <button href="#" ng-click="makeaBet(amount, item.id)" class="btn btn-primary mx-1" ng-disabled="activeUser.balance <= 0 || item.finished || activeUser.id === item.author"
+                                    ng-hide="item.finished || activeUser.id === item.author">Сделать ставку</button>
+                                <button href="#" ng-click="betHistory(item)" class="btn btn-primary mx-1" ng-disabled="!item.finished" ng-show="item.finished">История ставок</button>
+                                <button href="#" ng-click="closeLot(item)" class="btn btn-primary mx-1" ng-disabled="item.finished" ng-show="!item.finished && activeUser.id === item.author">Закрыть лот</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-tabs-page" id="bets">
+                    <h3>Ставки по всем закрытым лотам</h3>
+                    <table class="table table-striped" style="width:90%; margin: 16px 5%;">
+                            <thead>
+                                <tr>
+                                    <th>лот</th>
+                                    <th>Сумма</th>
+                                    <th>Транзакция</th>
+                                    <th>Пользователь</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="bet in allBets" ng-class="{'bg-success': bet.Win, 'text-light': bet.Win}">
+                                    <th scope="row" ng-bind="bet.Lot"></th>
+                                    <td ng-bind="bet.Amount"></td>
+                                    <td>
+                                        <a href="http://testnet.wavesexplorer.com/tx/{{bet.TransactionId}}" target="_blank" ng-bind="bet.TransactionId" ng-class="{'text-warning': bet.Win}"></a>
+                                    </td>
+                                    <td ng-bind="userFromId(bet.BetOwner).name"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+
+                <div class="nav-tabs-page" id="myBet">
+                    <h3>Мои ставки по активным лотам</h3>
+                    <table class="table table-striped" style="width:90%; margin: 16px 5%;">
+                            <thead>
+                                <tr>
+                                    <th>лот</th>
+                                    <th>Сумма</th>
+                                    <th>Транзакция</th>
+                                    <th>Пользователь</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="bet in activeBets" ng-class="{'bg-success': bet.Win, 'text-light': bet.Win}">
+                                    <th scope="row" ng-bind="bet.Lot"></th>
+                                    <td ng-bind="bet.Amount"></td>
+                                    <td>
+                                        <a href="http://testnet.wavesexplorer.com/tx/{{bet.TransactionId}}" target="_blank" ng-bind="bet.TransactionId" ng-class="{'text-warning': bet.Win}"></a>
+                                    </td>
+                                    <td ng-bind="userFromId(bet.BetOwner).name"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+
+                <div class="nav-tabs-page" id="myLot">
+                        <div class="row justify-content-center">
+                                <div class="card mx-3 border" ng-repeat="item in items" ng-class="{'border-info': item.finished, 'border-primary': item.author == activeUser.id}"
+                                    style="width:340px" ng-show="item.author === activeUser.id">
+                                    <img alt="100%x280" style="height: 280px; display: block; margin: 0 auto" ng-src="{{item.img}}" data-holder-rendered="true"
+                                        class="border p-2 rounded mb-2">
+                                    <p class="h4 mb-2">{{item.title}}</p>
+                                    <div class="card-text">
+                                        <strong ng-bind="userFromId(item.author).name" class="mb-2"></strong>
+                                        <span class="card-text float-right mb-3"><strong ng-bind="item.price"></strong> waves</span>
+                                    </div>
+
+                                    <div class="input-group mb-2" ng-hide="item.finished">
+                                        <!-- <span class="input-group-addon" id="basic-addon1">Введите сумму</span> -->
+                                        <input type="number" step="1" min="1" class="form-control" placeholder="1" aria-label="Username" aria-describedby="basic-addon1"
+                                            ng-model="amount">
+                                    </div>
+                                    <div class="input-group justify-content-center mb-2">
+                                        <button href="#" ng-click="makeaBet(amount, item.id)" class="btn btn-primary mx-1" ng-disabled="activeUser.balance <= 0 || item.finished || activeUser.id === item.author"
+                                            ng-hide="item.finished || activeUser.id === item.author">Сделать ставку</button>
+                                        <button href="#" ng-click="betHistory(item)" class="btn btn-primary mx-1" ng-disabled="!item.finished" ng-show="item.finished">История ставок</button>
+                                        <button href="#" ng-click="closeLot(item)" class="btn btn-primary mx-1" ng-disabled="item.finished" ng-show="!item.finished && activeUser.id === item.author">Закрыть лот</button>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+
+                <div class="nav-tabs-page" id="win">
+                        <div class="row justify-content-center">
+                                <div class="card mx-3 border" ng-repeat="item in items" ng-class="{'border-info': item.finished, 'border-primary': item.author == activeUser.id}"
+                                    style="width:340px" ng-show="item.finished && item.winneruserid === activeUser.id">
+                                    <img alt="100%x280" style="height: 280px; display: block; margin: 0 auto" ng-src="{{item.img}}" data-holder-rendered="true"
+                                        class="border p-2 rounded mb-2">
+                                    <p class="h4 mb-2">{{item.title}}</p>
+                                    <div class="card-text">
+                                        <strong ng-bind="userFromId(item.author).name" class="mb-2"></strong>
+                                        <span class="card-text float-right mb-3"><strong ng-bind="item.price"></strong> waves</span>
+                                    </div>
+
+                                    <div class="input-group mb-2" ng-hide="item.finished">
+                                        <!-- <span class="input-group-addon" id="basic-addon1">Введите сумму</span> -->
+                                        <input type="number" step="1" min="1" class="form-control" placeholder="1" aria-label="Username" aria-describedby="basic-addon1"
+                                            ng-model="amount">
+                                    </div>
+                                    <div class="input-group justify-content-center mb-2">
+                                        <button href="#" ng-click="makeaBet(amount, item.id)" class="btn btn-primary mx-1" ng-disabled="activeUser.balance <= 0 || item.finished"
+                                            ng-hide="item.finished">Сделать ставку</button>
+                                        <button href="#" ng-click="betHistory(item)" class="btn btn-primary mx-1" ng-disabled="!item.finished" ng-show="item.finished">История ставок</button>
+                                        <button href="#" ng-click="closeLot(item)" class="btn btn-primary mx-1" ng-disabled="item.finished" ng-show="!item.finished && activeUser.id === item.author">Закрыть лот</button>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="text-muted">
+            <div class="container">
+                <p class="float-right">
+                    <a href="#">Наверх</a>
+                </p>
+                  <p>Фиксики, специально для хакатона <strong>UfaFuture</strong>, 2017</p>
+            </div>
+        </footer>
+    </div>
+
+    <section id="layer-drawer-controller">
+        <div style="text-align: right">
+            <label for="layer-drawer-controller-toggle" class="btn btn-primary m-3">закрыть</label>
+        </div>
+        <article id="lot-history" ng-show="drawer === 'lot-history'">
+            <h4 style="margin-left: 6%">История ставок</h4>
+            <div class="lot-history-row" >
+                <span class="lot-history summ"></span>
+                <span class="lot-history-transaction"></span>
+                <span class="lot-history-name"></span>
+            </div>
+
+            <table class="table table-striped" style="width:90%; margin: 16px 5%;">
+                <thead>
+                    <tr>
+                    <th>#</th>
+                    <th>Сумма</th>
+                    <th>Транзакция</th>
+                    <th>Пользователь</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="bet in history track by $index" ng-class="{'bg-success': bet.Win, 'text-light': bet.Win}">
+                        <th scope="row" ng-bind="$index + 1"></th>
+                        <td ng-bind="bet.Amount"></td>
+                        <td>
+                            <a href="http://testnet.wavesexplorer.com/tx/{{bet.TransactionId}}" target="_blank" ng-bind="bet.TransactionId" ng-class="{'text-warning': bet.Win}"></a>
+                        </td>
+                        <td ng-bind="userFromId(bet.user.Id).name"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+
+        <article id="new-lot" ng-show="drawer === 'new-lot'">
+            <h4 style="margin:0 5% 30px">Создание нового лота</h4>
+            <form style="margin-left: 5%; width: 90%">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Минимальная сумма продажи</label>
+                    <input type="number" step="1" min="1" class="form-control" placeholder="100" ng-model="newLot.amount">
+                    <small id="emailHelp" class="form-text text-muted">Лот не будет разыгран, если сумма ставок не привысит это значение</small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Минимальная сумма ставки</label>
+                    <input type="number" step="1" min="1" class="form-control" placeholder="1" ng-model="newLot.min">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Шаг ставки</label>
+                    <input type="number" step="1" min="1" class="form-control" placeholder="1" ng-model="newLot.step">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Продолжительность аукциона</label>
+                    <input type="number" step="1" min="1" max="3" class="form-control" placeholder="3" ng-model="newLot.duration">
+                </div>
+                <div class="form-group">
+                        <label for="exampleInputEmail1">Название лота</label>
+                        <input type="text" class="form-control" placeholder="укажите название лота" ng-model="newLot.title">
+                    </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Фотография товара</label>
+                    <input type="file" step="1" min="1" class="form-control" ng-model="newLot.photo" />
+                </div>
+            </form>
+
+            <button ng-click="createNewLot()" style="margin: 20px 5%" class="btn btn-primary">Создать лот</button>
+        </article>
+    </section>
+
+    <!-- Bootstrap core JavaScript
 ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
-<script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')</script>
-<script src="assets/js/vendor/popper.min.js"></script>
-<script src="assets/js/vendor/holder.min.js"></script>
-<script>
-    $(function () {
-        Holder.addTheme("thumb", {background: "#55595c", foreground: "#eceeef", text: "Thumbnail"});
-    });
-</script>
-<script src="/dist/js/bootstrap.min.js"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script>
+        window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')
+    </script>
+    <script src="assets/js/vendor/popper.min.js"></script>
+    <script src="assets/js/vendor/holder.min.js"></script>
+    <script>
+        $(function() {
+            Holder.addTheme("thumb", {background: "#55595c", foreground: "#eceeef", text: "Thumbnail"});
+        });
+    </script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 
-<script src="assets/js/ie10-viewport-bug-workaround.js"></script>
-<script src="node_modules/angular/angular.min.js"></script>
-<script src="./node_modules/waves-api/dist/waves-api.min.js"></script>
-<script src="waves.js"></script>
-<script src="index.js"></script>
+    <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="node_modules/angular/angular.min.js"></script>
+    <script src="./node_modules/waves-api/dist/waves-api.min.js"></script>
+    <script src="waves.js"></script>
+    <script src="index.js"></script>
 
-
-
-
-<svg xmlns="http://www.w3.org/2000/svg" width="156" height="280" viewBox="0 0 156 280" preserveAspectRatio="none"
-     style="display: none; visibility: hidden; position: absolute; top: -100%; left: -100%;">
-    <defs>
-        <style type="text/css"></style>
-    </defs>
-    <text x="0" y="14" style="font-weight:bold;font-size:14pt;font-family:Arial, Helvetica, Open Sans, sans-serif">
-        156x280
-    </text>
-</svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="156" height="280" viewBox="0 0 156 280" preserveAspectRatio="none" style="display: none; visibility: hidden; position: absolute; top: -100%; left: -100%;">
+        <defs>
+            <style type="text/css"></style>
+        </defs>
+        <text x="0" y="14" style="font-weight:bold;font-size:14pt;font-family:Arial, Helvetica, Open Sans, sans-serif">
+            156x280
+        </text>
+    </svg>
 </body>
+
 </html>
