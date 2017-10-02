@@ -15,5 +15,6 @@ namespace Auction.WebApi.Models
         public string Deadline { get; set; }
         public string Picture { get; set; }
         public bool Finished { get; set; }
+        public int WinnerUserId { get; set; }
     }
 }

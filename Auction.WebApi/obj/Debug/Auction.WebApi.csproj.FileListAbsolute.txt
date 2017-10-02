@@ -94,9 +94,9 @@ C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\bin\Microsoft.AI.Depende
 C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\bin\Microsoft.AI.ServerTelemetryChannel.xml
 C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\bin\Microsoft.AI.WindowsServer.xml
 C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\bin\Microsoft.AI.Web.xml
-C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\obj\Debug\Auction.WebApi.csprojResolveAssemblyReference.cache
 C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\obj\Debug\Auction.WebApi.csproj.CoreCompileInputs.cache
 C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\obj\Debug\Auction.WebApi.dll
 C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\obj\Debug\Auction.WebApi.pdb
 C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\bin\Dapper.dll
 C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\bin\Dapper.xml
+C:\Users\Ula\source\repos\Auction.WebApi\Auction.WebApi\obj\Debug\Auction.WebApi.csprojResolveAssemblyReference.cache

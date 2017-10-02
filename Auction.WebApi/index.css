@@ -1,0 +1,21 @@
+.nav-tabs-page {
+    display: none;
+}
+.nav-tabs-page:target {
+    display: block;
+}
+
+#layer-drawer-controller {
+    position: fixed; top:0; right:0; bottom:0; width: 0; background: white; z-index: 10; box-shadow: -3px 0 3px #ccc; transition: .3s ease width;
+}
+
+#layer-drawer-controller-toggle:checked ~ #layer-drawer-controller {
+    width: 60%;
+}
+
+div.overlay {
+    transition: .1s linear filter;
+}
+#layer-drawer-controller-toggle:checked ~ div.overlay {
+    filter:blur(2px) grayscale(.8);
+}

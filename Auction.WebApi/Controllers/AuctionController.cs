@@ -70,6 +70,27 @@ namespace Auction.WebApi.Controllers
             return Service.GetBets(betId);
         }
 
+        [HttpGet]
+        [Route("betsall")]
+        public IEnumerable<BetContract> GetBets()
+        {
+            return Service.GetBets();
+        }
+
+        [HttpGet]
+        [Route("betsbyuser/{userid}/lot/{lotid}")]
+        public IEnumerable<BetContract> GetBetsbyUser(int userid, int lotid)
+        {
+            return Service.GetBetsByUser(userid, lotid);
+        }
+
+        [HttpGet]
+        [Route("betsbyuser/{userid}")]
+        public IEnumerable<BetContract> GetBetsbyUser(int userid)
+        {
+            return Service.GetBetsByUser(userid);
+        }
+
         [Route("lots/{lotid}/users")]
         public IEnumerable<object> GetLotUsers(int lotId)
         {
@@ -97,6 +118,7 @@ namespace Auction.WebApi.Controllers
         {
             Service.SetBetTransactionId(betId, transactionid);
         }
+
 
     }
 }

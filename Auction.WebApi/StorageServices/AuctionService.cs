@@ -81,6 +81,30 @@ limit 1";
             }
         }
 
+        internal IEnumerable<BetContract> GetBets()
+        {
+            using (var db = new DataRetriever(_connectionString))
+            {
+                return db.ReadData<BetContract>($"select * from bets order by id desc");
+            }
+        }
+
+        internal IEnumerable<BetContract> GetBetsByUser(int userid, int lotid)
+        {
+            using (var db = new DataRetriever(_connectionString))
+            {
+                return db.ReadData<BetContract>($"select * from bets where BetOwner = {userid} and lot = {lotid} order by id desc");
+            }
+        }
+
+        internal IEnumerable<BetContract> GetBetsByUser(int userid)
+        {
+            using (var db = new DataRetriever(_connectionString))
+            {
+                return db.ReadData<BetContract>($"select * from bets where BetOwner = {userid} order by id desc");
+            }
+        }
+
         internal void CreateLot(LotContract log)
         {
             using (var db = new DataRetriever(_connectionString))
