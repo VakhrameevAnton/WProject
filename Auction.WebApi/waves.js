@@ -32,7 +32,6 @@ let waves = {
             timestamp: Date.now()
         };
 
-        if (!amount) return Promise.reject({ error: 'сумма не может быть нулевой' });
         return waves.balance(from)
             .then(balance => {
                 if (balance < data.amount + data.fee) Promise.reject({error: 'недостаточно средств'});
@@ -63,10 +62,7 @@ let waves = {
     transfer(amount, from, to, attachment = '') {
         return new Promise(function (resolve, reject) {
             return waves.operation(amount, from, to, attachment)
-                .catch(function (error) {
-                    console.log('Ошибка!', error);
-                    return Promise.reject(error);
-                })
+                .catch(error => console.log('Ошибка', error))
                 .then(waves.timer)
                 .then(transaction => resolve(transaction))
                 .catch(reject)
@@ -89,7 +85,7 @@ let waves = {
                     .catch(_ => {
                         --counter;
                         console.log(counter);
-                        if (counter === 0) return reject(transaction);
+                        if (counter === 0) reject(transaction);
                         setTimeout(timeout, 10000);
                     });
             };

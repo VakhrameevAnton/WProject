@@ -8,48 +8,28 @@ WavesAPI.TESTNET_CONFIG.matcherAddress = host.matcher;
 
 const Waves = WavesAPI.create(WavesAPI.TESTNET_CONFIG);
 
-var factor = 100000000;
+var factor = 10000000;
 var api = 'https://b4b76b19.ngrok.io';
 var getUsersUrl = api + '/Auction/users ';
 var getLotsUrl = api + '/Auction/lots';
 var makeaBetUrl = api + '/Auction/bets';
-var lotHistory = api + '/Auction/lots/{0}/users';
-var closeLot = api + '/Auction/lots/{0}/finish';
-var betsAllUrl  = api + '/Auction/betsall';
-var activeBetsUrl = api + '/Auction/betsbyuser/{0}';
 
 angular.module('app', [])
     .controller('appController', function ($scope, $http, $timeout) {
+
+        let user = waves.auth('segment monitor opinion fly erode true federal slow found pill laugh proud infant picnic scan');
+// 3N79JuKD2Eni2pxCeUEx7GEdrovncn3u8j5
+
         let auction = waves.auth('banana note sea analyst room holiday shift armor crew easy pizza dad engage nest pioneer');
+// 3NACVraZj4t7DytjMmz64QgSmGDKMmdrt1x
+
+        waves.list(user, ['DuySf5DBeTu7aXxE9LdeD7Rrzo7qqpC4bYhFRb25qXFP', 'DFkVwVCHvFWN386t572ghJroJMck6fy8qdMxTsc7mz8c', '7ouiXv69bYHFvexXhQudxGEBdFyrNuFMvb9ZcK1vFXY6', 'Dnfvyuv1vA72TAkji5FpLe5z4rvKAjCBscMjhhHPK8Yn'])
+            .then(data => console.log('list', data));
 
         $scope.activeUser = null;
         $scope.makeaBet = makeaBet;
         $scope.setActiveUser = setActiveUser;
-        $scope.amount = 1;
-        $scope.allBets = [];
-        $scope.activeBets = [];
-        $scope.newLot = {};
-
-        $scope.ui = {
-            nav: {
-                lot:   'a.nav-link[href="#lot"]',
-                bet:   'a.nav-link[href="#bets"]',
-                myBet: 'a.nav-link[href="#myBet"]',
-                myLot: 'a.nav-link[href="#myLot"]',
-                win:   'a.nav-link[href="#win"]'
-            },
-            menu(e) {
-              let nav = Object.values($scope.ui.nav);
-              $scope.ui.onceClass(nav, e, 'active');
-              // $(e).click(); // ?
-            //   return false;
-            },
-            onceClass(items, e, name) {
-              items.forEach(item => $(item).removeClass(name));
-              $(e).addClass(name);
-            //   return false;
-            }
-        }
+        $scope.getUserBalanceAndName = getUserBalanceAndName;
 
         $http.get(getUsersUrl).then(function (items) {
             $scope.users = items.data.map(function (item) {
@@ -60,60 +40,38 @@ angular.module('app', [])
                 }
             });
             setActiveUser($scope.users[0]);
-            console.log($scope.users);
         });
 
-        $scope.userFromId = function(id) {
-          return $scope.users
-            ? $scope.users.filter(user => user.id === id)[0]
-            : '';
-        }
-
-        $scope.getAllLots = function() {
-            $http.get(getLotsUrl).then(function (items) {
-                $scope.items = items.data.map(function (item) {
-                    return {
-                        id: item.Id,
-                        img: item.Picture,
-                        title: item.Title,
-                        finished: item.Finished,
-                        author: item.IdAuthor,
-                        price: item.Price,
-                        data: new Date(item.Timeofpost),
-                        deadline: new Date(item.Deadline),
-                        winneruserid: item.WinnerUserId
-                    }
-                });
+        $http.get(getLotsUrl).then(function (items) {
+            $scope.items = items.data.map(function (item) {
+                return {
+                    id: item.Id,
+                    img: item.Picture,
+                    title: item.Title
+                }
             });
-        }
+        });
 
         function getUserBalance(user) {
-            return waves.balance(user.wallet)
-                .then(balance => $timeout(function() {
-                    user.balance = balance / factor;
-                }, 0));
+            return waves.balance(user.wallet);
         }
 
         function makeaBet(amount, lotId) {
             $scope.loading = true;
-            let user = $scope.activeUser;
-            if (user.balance > 0) {
-                waves.transfer(amount * factor, user.wallet, auction)
+            if ($scope.activeUser.balance > 0) {
+                waves.transfer(amount * factor, $scope.activeUser.wallet, auction)
                     .then(transaction => {
                         console.log('ok', transaction);
-                        return callApi(amount, lotId, transaction)
-                            .then(_ => getUserBalance(user));
+                        return callApi(amount, lotId, transaction);
                     })
-                    .catch(data => {
-                        console.log('no!', data);
-                    })
+                    .catch(data => console.log('no', data))
                     .then(() => {
-                        $timeout(() => $scope.loading = false, 0);
+                        $scope.loading = false;
                     });
 
                 function callApi(amount, lotId, transaction) {
                     return $http.post(makeaBetUrl, {
-                        BetOwner: user.id,
+                        BetOwner: $scope.activeUser.id,
                         Amount: amount || 10,
                         Lot: lotId,
                         TransactionId: transaction.id
@@ -132,105 +90,16 @@ angular.module('app', [])
 
         function setActiveUser(user) {
             $scope.activeUser = user;
-            getUserBalance($scope.activeUser);
-            $scope.getAllActiveBets();
-        }
 
-        $scope.betHistory = function(lot) { // lot = lot.id
-            let url = lotHistory.replace('{0}', lot.id);
-            $http.get(url).then(function({data}) {
-                history(lot, data);
-            });
-        }
-
-        $scope.closeLot = function(lot) {
-          let url = closeLot.replace('{0}', lot.id);
-          $http.post(url).then(function({data}) {
-              $scope.getAllLots();
-              history(lot, data);
-          });
-        }
-
-        function history(lot, data) {
-            $scope.history = data;
-            $scope.showDrawer('lot-history');
-        }
-
-        $scope.drawer = '';
-        $scope.showDrawer = function(article) {
-            let toggle = $('#layer-drawer-controller-toggle');
-            toggle.prop('checked', true);
-            $scope.drawer = article;
-        }
-        $scope.hideDrawer = function() {
-            let toggle = $('#layer-drawer-controller-toggle');
-            toggle.prop('checked', false);
-        }
-
-        $scope.getAllBets = function() {
-            $http.get(betsAllUrl).then(function({data}) {
-                console.log(data);
-                $timeout(function() {
-                    $scope.allBets = data;
-                }, 0)
-            })
-        }
-        $scope.getAllActiveBets = function() {
-            let url = activeBetsUrl.replace('{0}', $scope.activeUser.id);
-            $http.get(url).then(function({data}) {
-                console.log(data);
-                $timeout(function() {
-                    $scope.activeBets = data;
+            getUserBalance($scope.activeUser).then((value) => {
+                $timeout(() => {
+                    $scope.activeUser.balance = value
                 }, 0);
-            });
+            })
+
         }
 
-        // init
-        $scope.ui.menu($scope.ui.nav.lot);
-        $scope.getAllLots();
-
-        $scope.menuLots = function() {
-            $scope.ui.menu($scope.ui.nav.lot);
-            $scope.getAllLots()
+        function getUserBalanceAndName(user) {
+            return user.balance !== undefined ? user.name + ' Баланс: ' + user.balance : user.name;
         }
-
-        $scope.menuBets = function() {
-            $scope.ui.menu($scope.ui.nav.bet);
-            $scope.getAllBets();
-        }
-
-        $scope.menuMyLots = function() {
-            $scope.ui.menu($scope.ui.nav.myLot);
-            $scope.getAllLots();
-        }
-
-        $scope.menuWin = function() {
-            $scope.ui.menu($scope.ui.nav.win);
-            $scope.getAllLots()
-        }
-
-        $scope.menuMyBets = function() {
-            $scope.ui.menu($scope.ui.nav.myBet);
-            $scope.getAllActiveBets();
-        }
-
-        $scope.createNewLot = function() {
-            let newLot = Object.assign({}, $scope.newLot);
-            if (!newLot.amount) return alert('Не задана стоимость лота');
-            let date = new Date();
-            let dead = new Date(date.getFullYear(), date.getMonth(), date.getDate() + newLot.duration);
-            let data = {
-                Price: newLot.amount,
-                Title: newLot.title,
-                IdAuthor: $scope.activeUser.id,
-                Timeofpost: date,
-                Deadline: dead,
-                Picture: '8.jpg'
-            }
-
-            return $http.post(getLotsUrl, data)
-                .then($scope.getAllLots)
-                .then($scope.hideDrawer);
-        }
-
     });
