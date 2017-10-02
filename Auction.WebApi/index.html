@@ -32,7 +32,7 @@
                             </button> -->
                 <div>
                     <span class="text-white">Баланс: <strong ng-bind="activeUser.balance"></strong> waves</span>
-                    <label for="layer-drawer-controller-toggle" class="btn btn-primary ml-3">Создать лот</label>
+                    <button for="layer-drawer-controller-toggle" class="btn btn-primary ml-3" ng-click="showDrawer('new-lot')">Создать лот</button>
                 </div>
             </div>
         </div>
@@ -91,8 +91,8 @@
                                     ng-model="amount">
                             </div>
                             <div class="input-group justify-content-center mb-2">
-                                <button href="#" ng-click="makeaBet(amount, item.id)" class="btn btn-primary mx-1" ng-disabled="activeUser.balance <= 0 || item.finished"
-                                    ng-hide="item.finished">Сделать ставку</button>
+                                <button href="#" ng-click="makeaBet(amount, item.id)" class="btn btn-primary mx-1" ng-disabled="activeUser.balance <= 0 || item.finished || activeUser.id === item.author"
+                                    ng-hide="item.finished || activeUser.id === item.author">Сделать ставку</button>
                                 <button href="#" ng-click="betHistory(item)" class="btn btn-primary mx-1" ng-disabled="!item.finished" ng-show="item.finished">История ставок</button>
                                 <button href="#" ng-click="closeLot(item)" class="btn btn-primary mx-1" ng-disabled="item.finished" ng-show="!item.finished && activeUser.id === item.author">Закрыть лот</button>
                             </div>
@@ -116,7 +116,7 @@
                                         <th scope="row" ng-bind="bet.Lot"></th>
                                         <td ng-bind="bet.Amount"></td>
                                         <td ng-bind="bet.TransactionId"></td>
-                                        <td ng-bind="userFromId(bet.user.Id).name"></td>
+                                        <td ng-bind="userFromId(bet.BetOwner).name"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -138,7 +138,7 @@
                                         <th scope="row" ng-bind="bet.Lot"></th>
                                         <td ng-bind="bet.Amount"></td>
                                         <td ng-bind="bet.TransactionId"></td>
-                                        <td ng-bind="userFromId(bet.user.Id).name"></td>
+                                        <td ng-bind="userFromId(bet.BetOwner).name"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -162,8 +162,8 @@
                                             ng-model="amount">
                                     </div>
                                     <div class="input-group justify-content-center mb-2">
-                                        <button href="#" ng-click="makeaBet(amount, item.id)" class="btn btn-primary mx-1" ng-disabled="activeUser.balance <= 0 || item.finished"
-                                            ng-hide="item.finished">Сделать ставку</button>
+                                        <button href="#" ng-click="makeaBet(amount, item.id)" class="btn btn-primary mx-1" ng-disabled="activeUser.balance <= 0 || item.finished || activeUser.id === item.author"
+                                            ng-hide="item.finished || activeUser.id === item.author">Сделать ставку</button>
                                         <button href="#" ng-click="betHistory(item)" class="btn btn-primary mx-1" ng-disabled="!item.finished" ng-show="item.finished">История ставок</button>
                                         <button href="#" ng-click="closeLot(item)" class="btn btn-primary mx-1" ng-disabled="item.finished" ng-show="!item.finished && activeUser.id === item.author">Закрыть лот</button>
                                     </div>
@@ -217,7 +217,6 @@
         </div>
         <article id="lot-history" ng-show="drawer === 'lot-history'">
             <h4 style="margin-left: 6%">История ставок</h4>
-
             <div class="lot-history-row" >
                 <span class="lot-history summ"></span>
                 <span class="lot-history-transaction"></span>
@@ -244,8 +243,37 @@
             </table>
         </article>
 
-        <article id="new-lot">
+        <article id="new-lot" ng-show="drawer === 'new-lot'">
+            <h4 style="margin:0 5% 30px">Создание нового лота</h4>
+            <form style="margin-left: 5%; width: 90%">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Минимальная сумма продажи</label>
+                    <input type="number" step="1" min="1" class="form-control" placeholder="100" ng-model="newLot.amount">
+                    <small id="emailHelp" class="form-text text-muted">Лот не будет разыгран, если сумма ставок не привысит это значение</small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Минимальная сумма ставки</label>
+                    <input type="number" step="1" min="1" class="form-control" placeholder="1" ng-model="newLot.min">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Шаг ставки</label>
+                    <input type="number" step="1" min="1" class="form-control" placeholder="1" ng-model="newLot.step">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Продолжительность аукциона</label>
+                    <input type="number" step="1" min="1" max="3" class="form-control" placeholder="3" ng-model="newLot.duration">
+                </div>
+                <div class="form-group">
+                        <label for="exampleInputEmail1">Название лота</label>
+                        <input type="text" class="form-control" placeholder="укажите название лота" ng-model="newLot.title">
+                    </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Фотография товара</label>
+                    <input type="file" step="1" min="1" class="form-control" ng-model="newLot.photo" />
+                </div>
+            </form>
 
+            <button ng-click="createNewLot()" style="margin: 20px 5%" class="btn btn-primary">Создать лот</button>
         </article>
     </section>
 

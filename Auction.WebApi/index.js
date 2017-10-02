@@ -28,6 +28,7 @@ angular.module('app', [])
         $scope.amount = 1;
         $scope.allBets = [];
         $scope.activeBets = [];
+        $scope.newLot = {};
 
         $scope.ui = {
             nav: {
@@ -211,4 +212,24 @@ angular.module('app', [])
             $scope.ui.menu($scope.ui.nav.myBet);
             $scope.getAllActiveBets();
         }
+
+        $scope.createNewLot = function() {
+            let newLot = Object.assign({}, $scope.newLot);
+            if (!newLot.amount) return alert('Не задана стоимость лота');
+            let date = new Date();
+            let dead = new Date(date.getFullYear(), date.getMonth(), date.getDate() + newLot.duration);
+            let data = {
+                Price: newLot.amount,
+                Title: newLot.title,
+                IdAuthor: $scope.activeUser.id,
+                Timeofpost: date,
+                Deadline: dead,
+                Picture: '8.jpg'
+            }
+
+            return $http.post(getLotsUrl, data)
+                .then($scope.getAllLots)
+                .then($scope.hideDrawer);
+        }
+
     });
