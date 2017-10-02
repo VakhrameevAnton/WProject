@@ -133,6 +133,7 @@ angular.module('app', [])
         function setActiveUser(user) {
             $scope.activeUser = user;
             getUserBalance($scope.activeUser);
+            $scope.getAllActiveBets();
         }
 
         $scope.betHistory = function(lot) { // lot = lot.id
